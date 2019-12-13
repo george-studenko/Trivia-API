@@ -71,7 +71,40 @@ class TriviaTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(actual_categories ,expected_categories)
 
+    def test_get_questions_OK_response(self):
+        # Arrange
+        expected_status_code = 200
 
+        # Act
+        result = self.client().get('/questions')
+        actual_status_code = result.status_code
+
+        # Assert
+        self.assertEqual(actual_status_code, expected_status_code)
+        
+    def test_get_questions_success_True(self):
+        # Arrange
+        expected_value = True
+
+        # Act
+        result = self.client().get('/questions')
+        content = json.loads(result.data)
+        actual_value = content['success']
+
+        # Assert
+        self.assertEqual(actual_value, expected_value)
+
+    def test_get_questions_has_content(self):
+        # Arrange
+        expected_questions = 9
+
+        # Act
+        result = self.client().get('/questions?page=2')
+        content = json.loads(result.data)
+        actual_questions = content['current_page_total_questions']
+
+        # Assert
+        self.assertEqual(actual_questions, expected_questions)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
