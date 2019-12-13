@@ -5,13 +5,15 @@ from flask_sqlalchemy import SQLAlchemy
 
 from flaskr import create_app
 from models import setup_db, Question, Category
-
+import warnings
 
 class TriviaTestCase(unittest.TestCase):
     """This class represents the trivia test case"""
 
     def setUp(self):
         """Define test variables and initialize app."""
+        warnings.filterwarnings("ignore")
+
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
@@ -33,7 +35,9 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
-
+    def test_get_categories_OK_response(self):
+        result = self.client().get('/')
+        self.assertEqual(result.status_code,200)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
