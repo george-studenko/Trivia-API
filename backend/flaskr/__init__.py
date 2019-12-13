@@ -21,7 +21,7 @@ def create_app(test_config=None):
     response.headers.add('Access-Control-Allow-Methods', "GET,POST,DELETE")
     return response
 
-  @app.route('/', methods=['GET'])
+  @app.route('/categories', methods=['GET'])
   def get_categories():
     categories = Category.query.all()
     formatted_categories = [category.format() for category in categories]
@@ -100,6 +100,8 @@ def create_app(test_config=None):
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+  def not_found():
+    pass
   
   return app
 
