@@ -98,3 +98,15 @@ createdb trivia_test
 psql trivia_test < trivia.psql
 python test_flaskr.py
 ```
+
+** A more convenient way to run the tests is to execute:
+```
+./run_tests.sh
+```
+
+The line above will execute all the 4 lines above in the same order, this way instead of running 4 instructions manually only one line needs to be executed.
+
+If the file does not run because of permissions, execute the following line:
+```
+chmod +x run_tests.sh
+```
