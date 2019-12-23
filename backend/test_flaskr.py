@@ -26,7 +26,7 @@ class TriviaTestCase(unittest.TestCase):
             self.db = SQLAlchemy()
             # create all tables
             self.db.create_all()
-    
+
     def tearDown(self):
         """Executed after reach test"""
         pass
@@ -81,7 +81,7 @@ class TriviaTestCase(unittest.TestCase):
 
         # Assert
         self.assertEqual(actual_status_code, expected_status_code)
-        
+
     def test_get_questions_success_True(self):
         # Arrange
         expected_value = True
@@ -96,15 +96,60 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_get_questions_has_content(self):
         # Arrange
-        expected_questions = 9
+        expected_questions = 10
 
         # Act
-        result = self.client().get('/questions?page=2')
+        result = self.client().get('/questions?page=1')
         content = json.loads(result.data)
         actual_questions = content['current_page_total_questions']
 
         # Assert
         self.assertEqual(actual_questions, expected_questions)
+
+    def test_delete_question_has_OK_response(self):
+        # Arrange
+        expected_status_code = 200
+
+        # Act
+        result = self.client().delete('/questions/5')
+        actual_status_code = result.status_code
+
+        # Assert
+        self.assertEqual(actual_status_code, expected_status_code)
+
+    def test_delete_question_has_unprocessable_response(self):
+        # Arrange
+        expected_status_code = 422
+
+        # Act
+        result = self.client().delete('/questions/999')
+        actual_status_code = result.status_code
+
+        # Assert
+        self.assertEqual(actual_status_code, expected_status_code)
+
+    def test_question_has_been_deleted(self):
+        # Arrange
+        expected_result = True
+
+        # Act
+        result = self.client().delete('/questions/4')
+        content = json.loads(result.data)
+        actual_value = content['success']
+
+        # Assert
+        self.assertEqual(actual_value, expected_result)
+
+    def test_post_question_OK_response(self):
+        # Arrange
+        expected_status_code = 200
+
+        # Act
+        result = self.client().post('/questions')
+        actual_status_code = result.status_code
+
+        # Assert
+        self.assertEqual(actual_status_code, expected_status_code)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
