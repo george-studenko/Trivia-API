@@ -143,9 +143,21 @@ class TriviaTestCase(unittest.TestCase):
     def test_post_question_OK_response(self):
         # Arrange
         expected_status_code = 200
+        data = dict(question='q1', answer='a1', category=1, difficulty=1)
 
         # Act
-        result = self.client().post('/questions')
+        result = self.client().post('/questions', data= json.dumps(data), content_type='application/json')
+        actual_status_code = result.status_code
+
+        # Assert
+        self.assertEqual(actual_status_code, expected_status_code)
+
+    def test_search_question_OK_response(self):
+        # Arrange
+        expected_status_code = 200
+
+        # Act
+        result = self.client().post('/search')
         actual_status_code = result.status_code
 
         # Assert

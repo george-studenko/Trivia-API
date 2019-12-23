@@ -103,7 +103,6 @@ def create_app(test_config=None):
     @app.route('/questions', methods=['POST'])
     def post_question():
         try:
-            print('Posting question..')
             form = request.get_json()
             question = create_question_from_form(form)
             question.insert()
@@ -117,7 +116,6 @@ def create_app(test_config=None):
 
     def create_question_from_form(form):
         form_question = form['question']
-        print(form_question)
         answer = form['answer']
         difficulty = form['difficulty']
         category = form['category']
@@ -134,6 +132,11 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
+    @app.route('/search', methods=['POST'])
+    def search_question():
+        return jsonify({
+            'success': True
+        })
 
     '''
   @TODO: 
