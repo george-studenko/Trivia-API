@@ -1,7 +1,8 @@
+import json
+import random
+
 from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
-import random, json
-
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
@@ -16,7 +17,9 @@ def create_app(test_config=None):
 
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Headers', "Content-Type, Authorization, true")
+        response.headers.add(
+            'Access-Control-Allow-Headers',
+            "Content-Type, Authorization, true")
         response.headers.add('Access-Control-Allow-Methods', "GET,POST,DELETE")
         return response
 
@@ -48,7 +51,8 @@ def create_app(test_config=None):
 
         current_page_questions = questions[start_index:end_index]
 
-        formatted_questions = [question.format() for question in current_page_questions]
+        formatted_questions = [question.format() for question
+                               in current_page_questions]
 
         categories = get_categories()
         content = json.loads(categories.data)
@@ -75,7 +79,7 @@ def create_app(test_config=None):
             return jsonify({
                 'success': True
             })
-        except:
+        except Exception:
             abort(422)
 
     @app.route('/questions/<int:id>', methods=['GET'])
@@ -110,7 +114,11 @@ def create_app(test_config=None):
         answer = form['answer']
         difficulty = form['difficulty']
         category = form['category']
-        question = Question(question=form_question, answer=answer, difficulty=difficulty, category=category)
+        question = Question(
+            question=form_question,
+            answer=answer,
+            difficulty=difficulty,
+            category=category)
         return question
 
     @app.route('/search', methods=['POST'])
@@ -119,7 +127,8 @@ def create_app(test_config=None):
             form = request.get_json()
             search_term = form['searchTerm']
 
-            questions = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+            questions = Question.query.filter(
+                Question.question.ilike(f'%{search_term}%')).all()
 
             if len(questions) is 0:
                 abort(404)
@@ -157,7 +166,8 @@ def create_app(test_config=None):
         answered_questions = form['previous_questions']
 
         questions = get_quizz_questions(category_id)
-        remaining_questions = filter_remaining_questions(answered_questions, questions)
+        remaining_questions = filter_remaining_questions(
+            answered_questions, questions)
         question = get_random_question(remaining_questions)
 
         return jsonify({
@@ -170,7 +180,8 @@ def create_app(test_config=None):
         return question
 
     def filter_remaining_questions(answered_questions, questions):
-        remaining_questions = [q for q in questions if q.id not in answered_questions]
+        remaining_questions = [
+            q for q in questions if q.id not in answered_questions]
         return remaining_questions
 
     def get_quizz_questions(category_id):

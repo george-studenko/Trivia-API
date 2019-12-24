@@ -8,7 +8,6 @@ from models import setup_db, Question, Category
 import warnings
 
 
-
 class TriviaTestCase(unittest.TestCase):
     """This class represents the trivia test case"""
 
@@ -18,7 +17,8 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgres://{}/{}".format('localhost:5432', self.database_name)
+        self.database_path = "postgres://{}/{}".format(
+            'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -64,7 +64,7 @@ class TriviaTestCase(unittest.TestCase):
         actual_categories = len(content['categories'])
 
         # Assert
-        self.assertEqual(actual_categories ,expected_categories)
+        self.assertEqual(actual_categories, expected_categories)
 
     def test_get_questions_OK_response(self):
         # Arrange
@@ -141,7 +141,10 @@ class TriviaTestCase(unittest.TestCase):
         data = dict(question='q1', answer='a1', category=1, difficulty=1)
 
         # Act
-        result = self.client().post('/questions', data= json.dumps(data), content_type='application/json')
+        result = self.client().post(
+            '/questions',
+            data=json.dumps(data),
+            content_type='application/json')
         actual_status_code = result.status_code
 
         # Assert
@@ -153,7 +156,10 @@ class TriviaTestCase(unittest.TestCase):
         data = dict(searchTerm='1990')
 
         # Act
-        result = self.client().post('/search',data= json.dumps(data), content_type='application/json')
+        result = self.client().post(
+            '/search',
+            data=json.dumps(data),
+            content_type='application/json')
         actual_status_code = result.status_code
 
         # Assert
@@ -165,7 +171,10 @@ class TriviaTestCase(unittest.TestCase):
         data = dict(searchTerm='1990')
 
         # Act
-        result = self.client().post('/search',data= json.dumps(data), content_type='application/json')
+        result = self.client().post(
+            '/search',
+            data=json.dumps(data),
+            content_type='application/json')
         content = json.loads(result.data)
         actual_results = len(content['questions'])
 
@@ -178,7 +187,10 @@ class TriviaTestCase(unittest.TestCase):
         data = dict(searchTerm='Non_existing_term')
 
         # Act
-        result = self.client().post('/search', data=json.dumps(data), content_type='application/json')
+        result = self.client().post(
+            '/search',
+            data=json.dumps(data),
+            content_type='application/json')
         actual_status_code = result.status_code
 
         # Assert
@@ -190,7 +202,10 @@ class TriviaTestCase(unittest.TestCase):
         data = dict(bad_argument='Non_existing_term')
 
         # Act
-        result = self.client().post('/search', data=json.dumps(data), content_type='application/json')
+        result = self.client().post(
+            '/search',
+            data=json.dumps(data),
+            content_type='application/json')
         actual_status_code = result.status_code
 
         # Assert
@@ -233,15 +248,21 @@ class TriviaTestCase(unittest.TestCase):
     def test_get_next_question_OK_response(self):
         # Arrange
         expected_status_code = 200
-        data = dict(previous_questions=[], quiz_category={'type': 'Geography', 'id': '3'})
+        data = dict(
+            previous_questions=[],
+            quiz_category={
+                'type': 'Geography',
+                'id': '3'})
 
         # Act
-        result = self.client().post('/quizzes',  data=json.dumps(data), content_type='application/json')
+        result = self.client().post(
+            '/quizzes',
+            data=json.dumps(data),
+            content_type='application/json')
         actual_status_code = result.status_code
 
         # Assert
         self.assertEqual(actual_status_code, expected_status_code)
-
 
 
 # Make the tests conveniently executable
