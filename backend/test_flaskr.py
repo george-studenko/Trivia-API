@@ -233,26 +233,15 @@ class TriviaTestCase(unittest.TestCase):
     def test_get_next_question_OK_response(self):
         # Arrange
         expected_status_code = 200
+        data = dict(previous_questions=[], quiz_category={'type': 'Geography', 'id': '3'})
 
         # Act
-        result = self.client().post('/quizzes')
+        result = self.client().post('/quizzes',  data=json.dumps(data), content_type='application/json')
         actual_status_code = result.status_code
 
         # Assert
         self.assertEqual(actual_status_code, expected_status_code)
 
-    def test_get_next_question_has_content(self):
-        # Arrange
-        expected_number_of_questions = 1
-        data = dict(previous_questions=[], quiz_category={'type': 'Geography', 'id': '3'})
-
-        # Act
-        result = self.client().post('/quizzes',  data=json.dumps(data), content_type='application/json')
-        content = json.loads(result.data)
-        actual_number_of_questions = len(content['questions'])
-
-        # Assert
-        self.assertEqual(expected_number_of_questions, actual_number_of_questions)
 
 
 # Make the tests conveniently executable
