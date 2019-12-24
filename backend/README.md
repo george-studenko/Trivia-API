@@ -300,6 +300,7 @@ DELETE '/questios/<id>'
 
 - Errors: 422 if something fails
 
+{
   "error": 422, 
   "message": "Unprocessable Entity", 
   "success": false
