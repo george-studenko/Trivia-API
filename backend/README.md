@@ -223,10 +223,87 @@ POST '/questions'
 
 POST '/quizes'
 - Requests the questions for the game
-- Request Arguments: question, answer, category and difficulty
-- Returns: the created question
+- Request Arguments: previous_questions array with the ids of the already played questions, and quiz_category object: 
+{'previous_questions': [17], 'quiz_category': {'type': 'Art', 'id': '2'}}
+- Returns: a random question from the category requested (if the category requested is 0 then it retrieves questions from all categories)
 
+{
+  "question": {
+    "answer": "Edward Scissorhands", 
+    "category": 5, 
+    "difficulty": 3, 
+    "id": 6, 
+    "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+  }, 
+  "success": true
+}
 
+POST '/search'
+- Searchs for a question
+- Request Arguments: searchTerm 
+- Returns: an array of questions with the results from the search
+
+{
+  "questions": [
+    {
+      "answer": "The Liver", 
+      "category": 1, 
+      "difficulty": 4, 
+      "id": 20, 
+      "question": "What is the heaviest organ in the human body?"
+    }, 
+    {
+      "answer": "Alexander Fleming", 
+      "category": 1, 
+      "difficulty": 3, 
+      "id": 21, 
+      "question": "Who discovered penicillin?"
+    }
+  ], 
+  "currentCategory": "all", 
+  "success": true, 
+  "totalQuestions": 2
+}
+
+-Errors: 404 if there are no questions for the searched term]
+
+{
+  "error": 404, 
+  "message": "Not found", 
+  "success": false
+}
+
+- Errors: 422 if searchTerm as not sent or was miss spelled
+
+{
+  "error": 422, 
+  "message": "Unprocessable Entity", 
+  "success": false
+}
+
+DELETE '/questios/<id>'
+- Deletes a question given the question id to be deleted
+- Request Arguments: searchTerm 
+- Returns: an array of questions with the results from the search
+
+{
+  "success": true, 
+}
+
+- Errors: 404 if the requested question does not exist
+
+{
+  "error": 404, 
+  "message": "Not found", 
+  "success": false
+}
+
+- Errors: 422 if something fails
+
+  "error": 422, 
+  "message": "Unprocessable Entity", 
+  "success": false
+}
 
 ```
 
