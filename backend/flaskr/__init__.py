@@ -91,16 +91,6 @@ def create_app(test_config=None):
             'question': question.format()
         })
 
-    '''
-  @TODO: 
-  Create an endpoint to POST a new question, 
-  which will require the question and answer text, 
-  category, and difficulty score.
-
-  TEST: When you submit a question on the "Add" tab, 
-  the form will clear and the question will appear at the end of the last page
-  of the questions list in the "List" tab.  
-  '''
     @app.route('/questions', methods=['POST'])
     def post_question():
         try:
@@ -162,6 +152,7 @@ def create_app(test_config=None):
     @app.route('/quizzes', methods=['POST'])
     def get_next_question():
         form = request.get_json()
+        print(form)
         category_id = form['quiz_category']['id']
         answered_questions = form['previous_questions']
 
@@ -203,12 +194,4 @@ def create_app(test_config=None):
             "message": "Unprocessable Entity"
         }), 422
 
-    # @app.errorhandler(500)
-    # def unprocessable_entity(error):
-    #     return jsonify({
-    #         "success": False,
-    #         "error": 500,
-    #         "message": "Internal server error",
-    #         "exception_message": error
-    #     }), 500
     return app
