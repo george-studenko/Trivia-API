@@ -84,7 +84,7 @@ GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-- Errors: 404 if the requested category does not exist
+
 {'1' : "Science",
 '2' : "Art",
 '3' : "Geography",
@@ -92,11 +92,19 @@ GET '/categories'
 '5' : "Entertainment",
 '6' : "Sports"}
 
+- Errors: 404 if the requested category does not exist
+
+{
+  "error": 404, 
+  "message": "Not found", 
+  "success": false
+}
+
 GET '/categories/<id>/questions'
 - Fetches the questions for a given category
 - Request Arguments: Category Id
 - Returns: An object with currentCategory, and question objects from the category. 
-- Errors: 404 if the requested category has no questions or the category does not exist
+
 {
   "currentCategory": 1, 
   "questions": [
@@ -119,11 +127,18 @@ GET '/categories/<id>/questions'
   "totalQuestions": 2
 }
 
+- Errors: 404 if the requested category has no questions or the category does not exist
+
+{
+  "error": 404, 
+  "message": "Not found", 
+  "success": false
+}
+
 GET '/questions'  
 - Fetches the all questions and categories paginated 10 questions at a time
 - Request Arguments: Page, by default page is set to one if not sent
 - Returns: An object with all categories, and all question from all categories. 
-- Errors: 404 if the page does not exist
 
 {
   "categories": {
@@ -156,6 +171,15 @@ GET '/questions'
   "total_questions": 2
 }
 
+- Errors: 404 if the page does not exist
+
+{
+  "error": 404, 
+  "message": "Not found", 
+  "success": false
+}
+
+
 GET '/questions/<id>'
 - Fetches the all questions and categories
 - Request Arguments: None
@@ -177,7 +201,32 @@ POST '/questions'
 - Creates a new question
 - Request Arguments: question, answer, category and difficulty
 - Returns: the created question
+
+{
+  "question": {
+    "answer": "Edward Scissorhands", 
+    "category": 5, 
+    "difficulty": 3, 
+    "id": 6, 
+    "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+  }, 
+  "success": true
+}
+
 - Errors: 422 if the question could not be created
+
+{
+  "error": 422, 
+  "message": "Unprocessable Entity", 
+  "success": false
+}
+
+POST '/quizes'
+- Requests the questions for the game
+- Request Arguments: question, answer, category and difficulty
+- Returns: the created question
+
+
 
 ```
 
