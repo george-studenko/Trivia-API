@@ -1,8 +1,6 @@
-import os
 from flask import Flask, request, abort, jsonify
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-import random
+import random, json
 
 from models import setup_db, Question, Category
 
@@ -27,8 +25,11 @@ def create_app(test_config=None):
         categories = Category.query.all()
         if categories is None:
             abort(404)
+        formatted_categories = dict()
 
-        formatted_categories = [category.get_name() for category in categories]
+        for category in categories:
+            formatted_categories[category.id] = category.type
+
         return jsonify({
             'success': True,
             'categories': formatted_categories
@@ -49,9 +50,9 @@ def create_app(test_config=None):
 
         formatted_questions = [question.format() for question in current_page_questions]
 
-        categories = Category.query.all()
-
-        formatted_categories = [category.get_name() for category in categories]
+        categories = get_categories()
+        content = json.loads(categories.data)
+        formatted_categories = content['categories']
 
         return jsonify({
             'success': True,
@@ -122,42 +123,69 @@ def create_app(test_config=None):
         question = Question(question=form_question, answer=answer, difficulty=difficulty, category=category)
         return question
 
-    '''
-  @TODO: 
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
-  is a substring of the question. 
-
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
-  Try using the word "title" to start. 
-  '''
     @app.route('/search', methods=['POST'])
     def search_question():
+        try:
+            form = request.get_json()
+            search_term = form['searchTerm']
+
+            questions = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+
+            if len(questions) is 0:
+                abort(404)
+
+            formatted_questions = [question.format() for question in questions]
+            total_questions = len(questions)
+            return jsonify({
+                'questions': formatted_questions,
+                'success': True,
+                'totalQuestions': total_questions,
+                'currentCategory': 'all'
+            })
+        except KeyError:
+            abort(422)
+
+    @app.route('/categories/<int:id>/questions', methods=['GET'])
+    def get_questions_by_category(id):
+        questions = Question.query.filter_by(category=id).all()
+        formatted_questions = [question.format() for question in questions]
+        if len(questions) is 0:
+            abort(404)
+
         return jsonify({
-            'success': True
+            'currentCategory': id,
+            'success': True,
+            'questions': formatted_questions,
+            'totalQuestions': len(formatted_questions)
         })
 
-    '''
-  @TODO: 
-  Create a GET endpoint to get questions based on category. 
+    @app.route('/quizzes', methods=['POST'])
+    def get_next_question():
+        form = request.get_json()
+        category_id = form['quiz_category']['id']
+        answered_questions = form['previous_questions']
 
-  TEST: In the "List" tab / main screen, clicking on one of the 
-  categories in the left column will cause only questions of that 
-  category to be shown. 
-  '''
+        questions = get_quizz_questions(category_id)
+        remaining_questions = filter_remaining_questions(answered_questions, questions)
+        question = get_random_question(remaining_questions)
 
-    '''
-  @TODO: 
-  Create a POST endpoint to get questions to play the quiz. 
-  This endpoint should take category and previous question parameters 
-  and return a random questions within the given category, 
-  if provided, and that is not one of the previous questions. 
+        return jsonify({
+            'success': True,
+            'question': question.format()
+        })
 
-  TEST: In the "Play" tab, after a user selects "All" or a category,
-  one question at a time is displayed, the user is allowed to answer
-  and shown whether they were correct or not. 
-  '''
+    def get_random_question(remaining_questions):
+        question = random.choice(remaining_questions)
+        return question
+
+    def filter_remaining_questions(answered_questions, questions):
+        remaining_questions = [q for q in questions if q.id not in answered_questions]
+        return remaining_questions
+
+    def get_quizz_questions(category_id):
+        if category_id is not 0:
+            return Question.query.filter_by(category=category_id).all()
+        return Question.query.all()
 
     @app.errorhandler(404)
     def not_found(error):
@@ -175,4 +203,12 @@ def create_app(test_config=None):
             "message": "Unprocessable Entity"
         }), 422
 
+    # @app.errorhandler(500)
+    # def unprocessable_entity(error):
+    #     return jsonify({
+    #         "success": False,
+    #         "error": 500,
+    #         "message": "Internal server error",
+    #         "exception_message": error
+    #     }), 500
     return app

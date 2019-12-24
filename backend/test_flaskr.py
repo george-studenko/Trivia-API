@@ -31,11 +31,6 @@ class TriviaTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
-
-    """
-    TODO
-    Write at least one test for each test for successful operation and for expected errors.
-    """
     def test_get_categories_OK_response(self):
         # Arrange
         expected_status_code = 200
@@ -155,13 +150,110 @@ class TriviaTestCase(unittest.TestCase):
     def test_search_question_OK_response(self):
         # Arrange
         expected_status_code = 200
+        data = dict(searchTerm='1990')
 
         # Act
-        result = self.client().post('/search')
+        result = self.client().post('/search',data= json.dumps(data), content_type='application/json')
         actual_status_code = result.status_code
 
         # Assert
         self.assertEqual(actual_status_code, expected_status_code)
+
+    def test_search_question_has_results(self):
+        # Arrange
+        expected_results = 1
+        data = dict(searchTerm='1990')
+
+        # Act
+        result = self.client().post('/search',data= json.dumps(data), content_type='application/json')
+        content = json.loads(result.data)
+        actual_results = len(content['questions'])
+
+        # Assert
+        self.assertEqual(actual_results, expected_results)
+
+    def test_search_not_found_result(self):
+        # Arrange
+        expected_status_code = 404
+        data = dict(searchTerm='Non_existing_term')
+
+        # Act
+        result = self.client().post('/search', data=json.dumps(data), content_type='application/json')
+        actual_status_code = result.status_code
+
+        # Assert
+        self.assertEqual(actual_status_code, expected_status_code)
+
+    def test_search_unprocessable_result(self):
+        # Arrange
+        expected_status_code = 422
+        data = dict(bad_argument='Non_existing_term')
+
+        # Act
+        result = self.client().post('/search', data=json.dumps(data), content_type='application/json')
+        actual_status_code = result.status_code
+
+        # Assert
+        self.assertEqual(actual_status_code, expected_status_code)
+
+    def test_get_question_by_category_OK_response(self):
+        # Arrange
+        expected_status_code = 200
+
+        # Act
+        result = self.client().get('/categories/1/questions')
+        actual_status_code = result.status_code
+
+        # Assert
+        self.assertEqual(actual_status_code, expected_status_code)
+
+    def test_get_question_by_category_not_found_response(self):
+        # Arrange
+        expected_status_code = 404
+
+        # Act
+        result = self.client().get('/categories/182/questions')
+        actual_status_code = result.status_code
+
+        # Assert
+        self.assertEqual(actual_status_code, expected_status_code)
+
+    def test_get_question_by_category_has_correct_id(self):
+        # Arrange
+        expected_id = 1
+
+        # Act
+        result = self.client().get('/categories/1/questions')
+        content = json.loads(result.data)
+        actual_id = content['currentCategory']
+
+        # Assert
+        self.assertEqual(actual_id, expected_id)
+
+    def test_get_next_question_OK_response(self):
+        # Arrange
+        expected_status_code = 200
+
+        # Act
+        result = self.client().post('/quizzes')
+        actual_status_code = result.status_code
+
+        # Assert
+        self.assertEqual(actual_status_code, expected_status_code)
+
+    def test_get_next_question_has_content(self):
+        # Arrange
+        expected_number_of_questions = 1
+        data = dict(previous_questions=[], quiz_category={'type': 'Geography', 'id': '3'})
+
+        # Act
+        result = self.client().post('/quizzes',  data=json.dumps(data), content_type='application/json')
+        content = json.loads(result.data)
+        actual_number_of_questions = len(content['questions'])
+
+        # Assert
+        self.assertEqual(expected_number_of_questions, actual_number_of_questions)
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":

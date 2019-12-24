@@ -2,6 +2,7 @@ import os
 from sqlalchemy import Column, String, Integer, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
+from flask import jsonify
 
 database_name = "trivia"
 database_path = "postgres://{}/{}".format('localhost:5432', database_name)
@@ -76,6 +77,9 @@ class Category(db.Model):
       'id': self.id,
       'type': self.type
     }
+
+  def to_key_value(self):
+    return { self.id : self.type}
 
   def get_name(self):
     return self.type
