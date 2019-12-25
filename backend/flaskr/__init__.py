@@ -40,19 +40,17 @@ def create_app(test_config=None):
 
     @app.route('/questions', methods=['GET'])
     def get_questions():
+
         page = request.args.get('page', 1, type=int)
-        start_index = (page - 1) * QUESTIONS_PER_PAGE
-        end_index = start_index + QUESTIONS_PER_PAGE
 
-        questions = Question.query.all()
+        current_page_questions = Question.query.paginate(page, QUESTIONS_PER_PAGE, True)
+        total_questions = Question.get_count()
 
-        if questions is None:
+        if current_page_questions is None:
             abort(404)
 
-        current_page_questions = questions[start_index:end_index]
-
         formatted_questions = [question.format() for question
-                               in current_page_questions]
+                               in current_page_questions.items]
 
         categories = get_categories()
         content = json.loads(categories.data)
@@ -62,10 +60,11 @@ def create_app(test_config=None):
             'success': True,
             'questions': formatted_questions,
             'current_page_total_questions': len(formatted_questions),
-            'total_questions': len(questions),
+            'total_questions': total_questions,
             'current_category': 'All',
             'categories': formatted_categories
         })
+
 
     @app.route('/questions/<int:id>', methods=['DELETE'])
     def delete_question(id):

@@ -1,8 +1,5 @@
-import os
-from sqlalchemy import Column, String, Integer, create_engine
+from sqlalchemy import Column, String, Integer
 from flask_sqlalchemy import SQLAlchemy
-import json
-from flask import jsonify
 
 database_name = "trivia"
 database_path = "postgres://{}/{}".format('localhost:5432', database_name)
@@ -63,6 +60,10 @@ class Question(db.Model):
             'category': self.category,
             'difficulty': self.difficulty
         }
+
+    def get_count():
+        query = Question.query.all()
+        return len(query)
 
 
 '''
