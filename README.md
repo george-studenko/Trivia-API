@@ -20,8 +20,6 @@ Completing this trivia app will give you the ability to structure plan, implemen
 * Change ```get_questions``` pagination to use paginate method of query.paginate() which is more efficient and simplifies it.
 * Move pagination to a helper method
 
-We recommend following the instructions in those files in order. This order will look familiar from our prior work in the course.
-
 ## About the Stack
 
 ### Backend
